@@ -1,0 +1,54 @@
+---
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+  - name: build
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run/
+    commands:
+      - docker build --tag dijitle/chat:$DRONE_COMMIT .
+  - name: push
+    image: docker:dind
+    privileged: true
+    environment:
+      USERNAME:
+        from_secret: docker_username
+      PASSWORD:
+        from_secret: docker_password
+    volumes:
+      - name: dockersock
+        path: /var/run/
+    commands:
+      - docker tag dijitle/chat:$DRONE_COMMIT dijitle/chat:$DRONE_TAG
+      - docker login -u $USERNAME -p $PASSWORD
+      - docker push dijitle/chat:$DRONE_TAG
+    when:
+      event:
+        - tag
+  - name: deploy
+    image: dijitle/kubectl:v1.17.2
+    environment:
+      KUBERNETES_CERT:
+        from_secret: k8s_cert
+      KUBERNETES_TOKEN:
+        from_secret: k8s_token
+    commands:
+      - kubectl-init.sh
+      - kubectl set image deployment/chat-deployment chat=dijitle/chat:$DRONE_TAG
+    when:
+      event:
+        - tag
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/
+---
+kind: signature
+hmac: b85a1b245d91bd58d49e72e6603182ba5248cd424ecb57056c3cefbe2eb083fc
+
+...

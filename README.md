@@ -1,3 +1,17 @@
+# Dijitle Chat
+
+[![Build Status](https://drone.dijitle.dev/api/badges/dijitle/chat/status.svg)](https://drone.dijitle.dev/dijitle/chat)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/dijitle/chat?label=release)](https://github.com/dijitle/speedometer/chat)
+[![Docker Pulls](https://img.shields.io/docker/pulls/dijitle/chat)](https://hub.docker.com/r/dijitle/chat)
+
+SignalR based chat
+
+## endpoints
+
+[![web](https://img.shields.io/badge/Web-Link-blue?style=flat)](https://chat.dijitle.com)
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
