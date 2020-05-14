@@ -44,7 +44,7 @@ function App() {
     if (isAuthenticated && user && userName) {
       let connection = new HubConnectionBuilder()
         .configureLogging(LogLevel.Debug)
-        .withUrl("https://localhost:5001/hub", {
+        .withUrl("https://hub.dijitle.com/hub", {
           accessTokenFactory: () => {
             return getTokenSilently();
           },

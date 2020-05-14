@@ -1,6 +1,6 @@
 {
   "domain": "dijitle.auth0.com",
   "clientId": "36opbmm9zxVQ9eWxw7Tp4uNHJsaMDVgC",
-  "audience": "https://localhost:5001",
-  "hubURL": "https://localhost:5001/hub"
+  "audience": "https://hub.dijitle.com",
+  "hubURL": "https://hub.dijitle.com/hub"
 }
