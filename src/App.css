@@ -3,8 +3,13 @@ html {
   height: 100%;
 }
 
+.App,
+#root {
+  height: calc(100% - 75px);
+}
+
 .App {
-  height: 100%;
+  overflow-y: scroll;
 }
 
 .App-logo {

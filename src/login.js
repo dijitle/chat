@@ -21,8 +21,6 @@ export const Auth0Provider = ({
       const auth0FromHook = await createAuth0Client(initOptions);
       setAuth0(auth0FromHook);
 
-      console.log(auth0FromHook);
-
       if (
         window.location.search.includes("code=") &&
         window.location.search.includes("state=")

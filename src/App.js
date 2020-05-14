@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./App.css";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import "bootstrap/dist/css/bootstrap.min.css";
-import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Badge from "react-bootstrap/Badge";
@@ -16,6 +15,8 @@ function App() {
   const [currentMessage, setCurrentMessage] = useState("");
   const [conn, setConn] = useState();
   const [userName, setUserName] = useState(null);
+  const LastMessageRef = useRef(null);
+  const FirstMessageRef = useRef(null);
 
   const {
     isAuthenticated,
@@ -50,8 +51,14 @@ function App() {
         })
         .build();
 
-      connection.on("MessageReceived", (name, message) => {
-        setMessages((m) => [...m, { n: name, m: message, d: new Date() }]);
+      connection.on("MessageReceived", (message) => {
+        setMessages((m) => [...m, { ...message }]);
+        scrollToBottom();
+      });
+
+      connection.on("GetMessages", (message) => {
+        setMessages((m) => [...message, ...m]);
+        scrollToTop();
       });
 
       connection
@@ -67,9 +74,21 @@ function App() {
     }
   }, [isAuthenticated, user, userName]);
 
+  const scrollToTop = () => {
+    FirstMessageRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToBottom = () => {
+    LastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
   const submitMessage = async () => {
     conn.invoke("SendMessage", currentMessage);
     setCurrentMessage("");
+  };
+
+  const GetPreviousMessages = async () => {
+    conn.invoke("GetMessages", 5, messages[0].id);
   };
 
   return (
@@ -82,16 +101,23 @@ function App() {
 
         {isAuthenticated && <button onClick={() => logout()}>Log out</button>}
       </div>
-      <div className="text-align-left mx-5 my-1">
+      <div className="text-align-left px-5 mb-5">
+        {messages[0]?.previousId ? (
+          <Button variant="secondary" size="sm" onClick={GetPreviousMessages}>
+            Get Previous...
+          </Button>
+        ) : null}
+        <div ref={FirstMessageRef}></div>
         {messages.map((m) => (
-          <div key={m.d} className="border-3 shadow-sm p-3">
-            <h3>{m.n}</h3>
+          <div key={m.id} className="border-3 shadow-sm p-3">
+            <h3>{m.name}</h3>
             <Badge className="float-right" pill variant="secondary">
-              {m.d.toLocaleTimeString()}
+              {new Date(m.dateSent).toLocaleTimeString()}
             </Badge>
-            {m.m}
+            {m.content}
           </div>
         ))}
+        <div ref={LastMessageRef}></div>
       </div>
       <div className="container-fluid fixed-bottom">
         <Form.Control
